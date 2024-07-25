@@ -203,7 +203,7 @@ func main() {
 		}
 
 		if *holePunchingEnabled {
-			c.Relay.DirectPeerConnect = true
+			c.Relay.HolePunch = true
 		}
 	}
 
