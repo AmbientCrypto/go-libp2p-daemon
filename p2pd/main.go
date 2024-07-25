@@ -17,7 +17,7 @@ import (
 
 	p2pd "github.com/libp2p/go-libp2p-daemon"
 	config "github.com/libp2p/go-libp2p-daemon/config"
-	"github.com/libp2p/go-libp2p-mplex"
+	mplex "github.com/libp2p/go-libp2p-mplex"
 	ps "github.com/libp2p/go-libp2p-pubsub"
 	"github.com/libp2p/go-libp2p/p2p/muxer/yamux"
 	connmgr "github.com/libp2p/go-libp2p/p2p/net/connmgr"
@@ -89,6 +89,7 @@ func main() {
 	relayDiscovery := flag.Bool("relayDiscovery", false, "Enables passive discovery for relay")
 	autoRelay := flag.Bool("autoRelay", false, "Enables autorelay")
 	autonat := flag.Bool("autonat", false, "Enables the AutoNAT service")
+	holePunchingEnabled := flag.Bool("holePunchingEnabled", false, "Enables hole punching via direct connnection upgrade through relay (DUCtR)")
 	hostAddrs := flag.String("hostAddrs", "", "comma separated list of multiaddrs the host should listen on")
 	announceAddrs := flag.String("announceAddrs", "", "comma separated list of multiaddrs the host should announce to the network")
 	noListen := flag.Bool("noListenAddrs", false, "sets the host to listen on no addresses")
@@ -199,6 +200,10 @@ func main() {
 		}
 		if *relayHopLimit > 0 {
 			c.Relay.HopLimit = *relayHopLimit
+		}
+
+		if *holePunchingEnabled {
+			c.Relay.DirectPeerConnect = true
 		}
 	}
 
@@ -359,6 +364,10 @@ func main() {
 		opts = append(opts, libp2p.ForceReachabilityPrivate())
 	} else if *forceReachabilityPublic {
 		opts = append(opts, libp2p.ForceReachabilityPublic())
+	}
+
+	if c.Relay.HolePunch {
+		opts = append(opts, libp2p.EnableHolePunching())
 	}
 
 	// start daemon

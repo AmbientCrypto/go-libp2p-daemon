@@ -68,6 +68,7 @@ type Relay struct {
 	Hop       bool
 	Discovery bool
 	Auto      bool
+	HolePunch bool
 	HopLimit  int
 }
 
